@@ -12,6 +12,12 @@ if [ ! -f /tmp/lastyumcheck ]; then
     echo "9999" >> /tmp/lastyumcheck
 fi
 
+YUMCHECKLC=`wc -l /tmp/lastyumcheck | cut -d " " -f1`
+if [ $YUMCHECKLC -lt 2 ]; then
+    echo "1970-01-01 00:00" > /tmp/lastyumcheck
+    echo "9999" >> /tmp/lastyumcheck
+fi
+
 LASTCHECK=`head -n1 /tmp/lastyumcheck`
 OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
 DAYSSINCECHECK=$(( ( $(date +%s) - $(date -d "$LASTCHECK" +%s) ) /(24 * 60 * 60 ) ))
