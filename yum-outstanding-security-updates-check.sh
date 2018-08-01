@@ -7,16 +7,19 @@
 #3      Protocol Error (e.g. web server returns a 404)
 #4      Content Error (e.g. a web page does not contain a required word)
 
-# Create check file
-touch /tmp/lastyumcheck
+if [ ! -f /tmp/lastyumcheck ]; then
+    echo "1970-01-01 00:00" > /tmp/lastyumcheck
+    echo "9999" >> /tmp/lastyumcheck
+fi
 
 LASTCHECK=`head -n1 /tmp/lastyumcheck`
 OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
 DAYSSINCECHECK=$(( ( $(date +%s) - $(date -d "$LASTCHECK" +%s) ) /(24 * 60 * 60 ) ))
 
 if [ $DAYSSINCECHECK -gt 0 ]; then
-		SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; yum check-update --security | grep "needed for" | cut -d " " -f1 | sed 's/No/0/g' >> /tmp/lastyumcheck`
-		echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
+        SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; yum check-update --security | grep "needed for" | cut -d " " -f1 | sed 's/No/0/g' >> /tmp/lastyumcheck`
+        OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
+        echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
 else
-		echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
+        echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
 fi
