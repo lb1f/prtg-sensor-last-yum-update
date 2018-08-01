@@ -11,7 +11,7 @@ PRTG Sensor - SSH Script - Yum update status - Days since last yum update
 4. Make executable chmod +x sh-script
 5. Optional: Test it by executing the script
 
-## Add sensor tot PRTG
+## Add sensor to PRTG
 
 1. Login to your Paessler PRTG Network Monitor
 2. Add your Linux server as new device if needed and setup "Credentials for Linux/Solaris/MAC OS (SSH/WBEM) Systems"
@@ -23,9 +23,5 @@ PRTG Sensor - SSH Script - Yum update status - Days since last yum update
 
 # Known issues
 
-## Users with capital "U" in the username who run yum
-The script searches for a capital "U" in the output of "yum history", if there is a user with a capital U in the name who did run the yum command, the script will take this date as the last yum update moment. Then this is not necessarily the last update, could also mean last install or remove date in that particular case.
-
 # Compatibility
-
 This sensor is tested with Linux Centos 6.x and 7.x
