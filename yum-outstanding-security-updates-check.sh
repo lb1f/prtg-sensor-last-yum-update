@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #returncode:value:message
 #0      OK
@@ -7,10 +7,14 @@
 #3      Protocol Error (e.g. web server returns a 404)
 #4      Content Error (e.g. a web page does not contain a required word)
 
-SUPDATES=`yum check-update --security | grep "needed for" | cut -d " " -f1`
-#grep U matches with Update and U
-#head -n1 takes upper line
-#cut sets delimiter on spaces and takes first column
-#OUTPUT EXAMPLE 2
+touch /tmp/lastyumcheck
+LASTCHECK=`head -n1 /tmp/lastyumcheck`
+OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
+DAYSSINCECHECK=$(( ( $(date +%s) - $(date -d "$LASTCHECK" +%s) ) /(24 * 60 * 60 ) ))
 
-echo "0:$SUPDATES:$SUPDATES Outstanding Security Updates"
+if [ "$DAYSSINCECHECK" = 0 ]; then
+        echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
+else
+        SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; yum check-update --security | grep "needed for" | cut -d " " -f1 | sed 's/No/0/g' >> /tmp/lastyumcheck`
+        echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
+fi
