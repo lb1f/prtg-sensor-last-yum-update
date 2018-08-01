@@ -22,6 +22,7 @@ PRTG Sensor - SSH Script - Yum update status - Days since last yum update
 7. Ready!
 
 # Known issues
+When there are no security updates required it currently returns "No". I need to take this and turn it into a 0.
 
 # Compatibility
 This sensor is tested with Linux Centos 6.x and 7.x
