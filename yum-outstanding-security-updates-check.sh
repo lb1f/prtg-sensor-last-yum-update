@@ -13,17 +13,23 @@ if [ ! -f /tmp/lastyumcheck ]; then
 fi
 
 YUMCHECKLC=`wc -l /tmp/lastyumcheck | cut -d " " -f1`
-if [ $YUMCHECKLC -lt 2 ]; then
+if [ $YUMCHECKLC != 2 ]; then
     echo "1970-01-01 00:00" > /tmp/lastyumcheck
     echo "9999" >> /tmp/lastyumcheck
 fi
 
-LASTCHECK=`head -n1 /tmp/lastyumcheck`
+DATECHECK=`head -n1 /tmp/lastyumcheck | grep "-" | wc -l`
+if [ $DATECHECK != 1 ]; then
+    echo "1970-01-01 00:00" > /tmp/lastyumcheck
+    echo "9999" >> /tmp/lastyumcheck
+fi
+
+LASTCHECK=`head -n1 /tmp/lastyumcheck | grep "-"`
 OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
 DAYSSINCECHECK=$(( ( $(date +%s) - $(date -d "$LASTCHECK" +%s) ) /(24 * 60 * 60 ) ))
 
 if [ $DAYSSINCECHECK -gt 0 ]; then
-        SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; yum check-update --security | grep "needed for" | cut -d " " -f1 | sed 's/No/0/g' >> /tmp/lastyumcheck`
+        SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; yum check-update --security | grep "needed for" | cut -d " " -f1 | sed                                    's/No/0/g' >> /tmp/lastyumcheck`
         OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
         echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
 else
