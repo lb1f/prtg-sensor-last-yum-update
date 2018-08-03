@@ -7,7 +7,7 @@
 #3      Protocol Error (e.g. web server returns a 404)
 #4      Content Error (e.g. a web page does not contain a required word)
 
-LASTUPDATE=`yum history | cut -d'|' -f3,4 | grep U | head -n 1 | cut -d'|' -f1`
+LASTUPDATE=`sudo yum history | cut -d'|' -f3,4 | grep U | head -n 1 | cut -d'|' -f1`
 #grep U matches with Update and U
 #head -n1 takes upper line
 #cut sets delimiter at | and takes column 3
