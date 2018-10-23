@@ -22,7 +22,7 @@ PRTG Sensor - SSH Script - Yum update status - Days since last yum update
 7. Ready!
 
 # Known issues
-None currently
+There is a problem with yum-outstanding-security-updates-check.sh in that it won't work on CentOS. I'm currently reworking this to a new format to support CentOS but this will have a dependency of centos-package-cron (https://github.com/wied03/centos-package-cron)
 
 # Compatibility
 This sensor is tested with Linux Centos 6.x and 7.x
