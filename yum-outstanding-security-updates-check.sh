@@ -29,7 +29,7 @@ OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
 DAYSSINCECHECK=$(( ( $(date +%s) - $(date -d "$LASTCHECK" +%s) ) /(24 * 60 * 60 ) ))
 
 if [ $DAYSSINCECHECK -gt 0 ]; then
-        SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; centos-package-cron -o stdout -fo | grep "Critical|Important" >> /tmp/lastyumcheck`
+        SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; centos-package-cron -o stdout -fo | grep "Critical|Important" | wc -l >> /tmp/lastyumcheck`
         OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
         echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
 else
