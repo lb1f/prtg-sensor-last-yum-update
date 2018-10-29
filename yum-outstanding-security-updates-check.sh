@@ -1,4 +1,9 @@
 #!/bin/bash
+# Checks /tmp/lastyumcheck for status.
+# If old enough it runs centos-package-cron and outputs the content to /tmp/centos-package-cron-output
+# /tmp/centos-package-cron-output is then checked for Critical or Important updates.
+# Please review /tmp/centos-package-cron-output for what updates are required before running a yum update.
+# It would be worth adding this script into cron to reduce load and execution time.
 
 #returncode:value:message
 #0      OK
@@ -29,8 +34,7 @@ OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
 DAYSSINCECHECK=$(( ( $(date +%s) - $(date -d "$LASTCHECK" +%s) ) /(24 * 60 * 60 ) ))
 
 if [ $DAYSSINCECHECK -gt 0 ]; then
-        SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; centos-package-cron -o stdout -fo | grep -E "Critical|Important" | wc -l >> /tmp/lastyumcheck`
-        OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
+        SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; centos-package-cron -o stdout -fo > /tmp/centos-package-cron-output; grep -E "Critical|Important" /tmp/centos-package-cron-output | wc -l >> /tmp/lastyumcheck`
         echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
 else
         echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
