@@ -2,7 +2,10 @@
 # Checks /tmp/lastyumcheck for status.
 # If old enough it runs centos-package-cron and outputs the content to /tmp/centos-package-cron-output
 # /tmp/centos-package-cron-output is then checked for Critical or Important updates.
+#
 # Please review /tmp/centos-package-cron-output for what updates are required before running a yum update.
+# If you want to update JUST the items with Critical, Important, Moderate security issues, this command will do it, there is probably a more elegant way, but currently this just works:
+# yum update `grep -E "Critical|Important|Moderate" /tmp/centos-package-cron-output -B1 -A50 | sed -n '/Advisory ID:/,/References/p' | grep "*" | cut -d " " -f2 | sed -e 's/\([^.]*\).*/\1/' -e 's/\(.*\)-.*/\1/' | sort | uniq`
 # It would be worth adding this script into cron to reduce load and execution time.
 
 #returncode:value:message
