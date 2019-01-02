@@ -4,8 +4,11 @@
 # /tmp/centos-package-cron-output is then checked for Critical or Important updates.
 #
 # Please review /tmp/centos-package-cron-output for what updates are required before running a yum update.
+# This command will update all packages with security issues:
+# yum update `awk '/Packages/,/References/' /tmp/centos-package-cron-output | grep "*" | cut -d " " -f2 | sed -e 's/\([^.]*\).*/\1/' -e 's/\(.*\)-.*/\1/' | sort | uniq`
+#
 # If you want to update JUST the items with Critical, Important, Moderate security issues, this command will do it, there is probably a more elegant way, but currently this just works:
-# yum update `grep -E "Critical|Important|Moderate" /tmp/centos-package-cron-output -B1 -A50 | sed -n '/Advisory ID:/,/References/p' | grep "*" | cut -d " " -f2 | sed -e 's/\([^.]*\).*/\1/' -e 's/\(.*\)-.*/\1/' | sort | uniq`
+# yum update `awk '/Critical/ || /Moderate/ || /Important/,/References/' /tmp/centos-package-cron-output | grep "*" | cut -d " " -f2 | sed -e 's/\([^.]*\).*/\1/' -e 's/\(.*\)-.*/\1/' | sort | uniq`
 # It would be worth adding this script into cron to reduce load and execution time.
 
 #returncode:value:message
