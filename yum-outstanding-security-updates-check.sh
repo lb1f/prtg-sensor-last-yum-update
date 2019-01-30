@@ -41,6 +41,7 @@ DAYSSINCECHECK=$(( ( $(date +%s) - $(date -d "$LASTCHECK" +%s) ) /(24 * 60 * 60 
 
 if [ $DAYSSINCECHECK -gt 0 ]; then
         SUPDATES=`date '+%Y-%m-%d %H:%M' > /tmp/lastyumcheck; centos-package-cron -o stdout -fo | sed -n '/Advisory ID:/,/errata/p' > /tmp/centos-package-cron-output; grep -E "Critical|Important|Moderate" /tmp/centos-package-cron-output | wc -l >> /tmp/lastyumcheck`
+        OUTSTANDING=`tail -n1 /tmp/lastyumcheck`
         echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
 else
         echo "0:$OUTSTANDING:$OUTSTANDING Outstanding Security Updates"
