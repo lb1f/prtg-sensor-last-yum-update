@@ -10,6 +10,9 @@
 # If you want to update JUST the items with Critical, Important, Moderate security issues, this command will do it, there is probably a more elegant way, but currently this just works:
 # yum update `awk '/Critical/ || /Moderate/ || /Important/,/References/' /tmp/centos-package-cron-output | grep "*" | cut -d " " -f2 | sed -e 's/\([^.]*\).*/\1/' -e 's/\(.*\)-.*/\1/' | sort | uniq`
 # It would be worth adding this script into cron to reduce load and execution time.
+#
+# List important updates from output in a slightly prettier format:
+# awk '/Critical/ || /Moderate/ || /Important/,/Advisory/{print a}{a=$0}' /tmp/centos-package-cron-output | sed -e 's/\*/\t* /g'
 
 #returncode:value:message
 #0      OK
