@@ -1,28 +1,66 @@
-# prtg-sensor-last-yum-update
-PRTG Sensor - SSH Script - Yum update status - Days since last yum update
+# Yum Security Update Sensor
 
-# How To Use?
+Lightweight shell sensors for RHEL-family Linux servers, reporting
+either the count of outstanding security advisories or the number of
+days since the last package update. Output uses the
+`returncode:value:message` format consumed by SSH-script-based
+monitoring tools.
 
-## Install sensor on Linux server
+## Compatibility
 
-1. Login to your Linux server
-2. Create directory /var/prtg/scripts
-3. Put sensor sh-script in this directory
-4. Make executable chmod +x sh-script
-5. Optional: Test it by executing the script
+Tested on RHEL, AlmaLinux, Rocky, and Amazon Linux. The security
+update script uses `yum updateinfo`, which is available on all of
+these out of the box (no third-party package required).
 
-## Add sensor to PRTG
+The original CentOS 6/7 era version of the security script depended
+on `centos-package-cron`; that dependency has been dropped.
 
-1. Login to your Paessler PRTG Network Monitor
-2. Add your Linux server as new device if needed and setup "Credentials for Linux/Solaris/MAC OS (SSH/WBEM) Systems"
-3. Click "Add Sensor"
-4. Choose "SSH Script"
-5. Choose the right sh-script in the dropdown box under Sensor Settings > Script
-6. Optional: Set Warning or Error limit in days under "Edit Channel Settings" > "Enable Limits" > "Upper Warning Limit" AND "Upper Error Limit"
-7. Ready!
+## Scripts
 
-# Known issues
-There is a problem with yum-outstanding-security-updates-check.sh in that it won't work on CentOS. I'm currently reworking this to a new format to support CentOS but this will have a dependency of centos-package-cron (https://github.com/wied03/centos-package-cron)
+- **`yum-outstanding-security-updates-check.sh`** — Counts distinct
+  outstanding security advisories (Critical / Important / Moderate).
+  Counts advisories rather than packages so that, e.g., a kernel
+  update reports as one item rather than six.
+- **`yum-last-update-check.sh`** — Reports days since the last
+  successful `yum` transaction.
 
-# Compatibility
-This sensor is tested with Linux Centos 6.x and 7.x
+Both write a single `returncode:value:message` line to stdout.
+
+## Installation
+
+1. Copy the chosen script to a directory on the target server, e.g.
+   `/var/prtg/scripts/`.
+2. `chmod +x` the script.
+3. Configure your monitoring tool to invoke it over SSH and parse the
+   output line.
+
+The security update script caches its result in `/tmp/lastyumcheck`
+and only re-runs `yum updateinfo` when the cached date is older than
+the current day, so it is safe to poll frequently.
+
+## Applying the updates this reports
+
+```sh
+# All severities
+yum update --security
+
+# Just one severity
+yum update --sec-severity=Important
+
+# Specific severities
+yum update --sec-severity=Critical --sec-severity=Important
+```
+
+The detailed advisory list (CVEs, references, package sets) is
+written to `/tmp/security-update-detail` on each refresh — read this
+before approving a maintenance window.
+
+## Output format
+
+```
+0:7:7 Outstanding Security Updates
+^ ^ ^
+| | └─ Human-readable message
+| └─── Numeric value (the count)
+└───── Return code: 0=OK, 1=Warning, 2=System Error, 3=Protocol, 4=Content
+```
